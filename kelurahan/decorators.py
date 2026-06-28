@@ -10,7 +10,7 @@ def role_required(allowed_roles=[]):
             if group in allowed_roles:
                 return func(request, *args, **kwargs)
             else:
-                return render(request, "404.html")
+                return render(request, "base/404.html")
             
         return wrap
     return decorator

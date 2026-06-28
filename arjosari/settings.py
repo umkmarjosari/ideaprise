@@ -28,7 +28,7 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG').lower() == 'true'
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
@@ -167,7 +167,7 @@ if os.environ.get('USE_SUPABASE_STORAGE', 'False').lower() == 'true':
     # Supabase S3 requires path-style addressing and S3v4 signature
     AWS_S3_ADDRESSING_STYLE = 'path'
     AWS_S3_SIGNATURE_VERSION = 's3v4'
-    AWS_S3_FILE_OVERWRITE = False
+    AWS_S3_FILE_OVERWRITE = True
     AWS_DEFAULT_ACL = None
     AWS_QUERYSTRING_AUTH = False  # Set to True if using private buckets and requiring signed URLs
 

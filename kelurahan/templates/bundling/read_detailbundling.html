@@ -68,7 +68,7 @@
                                     <h5 class="fw-bold text-dark mb-1" style="font-size: 1.1rem;">{{ i.id_produk.nama_produk }}</h5>
                                     <p class="text-success fw-semibold mb-1 small">Rp{{ i.id_produk.harga_produk|floatformat:0 }}</p>
                                     <p class="text-muted small mb-0 d-none d-sm-block" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-                                        {{ i.id_produk.deskripsi_produk }}
+                                        {{ i.id_produk.deskripsi_produk|linebreaksbr }}
                                     </p>
                                 </div>
                             </div>
