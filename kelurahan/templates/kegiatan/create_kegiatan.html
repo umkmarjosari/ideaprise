@@ -13,22 +13,22 @@
     {% csrf_token %}
     
     <div class="mb-3">
-      <label for="id_kategori" class="form-label fw-bold">Kategori</label>
+      <label for="id_kategori" class="form-label fw-bold">Kategori <span class="text-danger">*</span></label>
       <select name="id_kategori" id="id_kategori" class="form-select" required>
         <option value="">Pilih Kategori</option>
         {% for i in kategoriobj %}
-          <option value="{{ i.id_kategori }}">{{ i.nama_kategori }}</option>
+          <option value="{{ i.id_kategori }}" {% if old_data.id_kategori == i.id_kategori|stringformat:"s" %}selected{% endif %}>{{ i.nama_kategori }}</option>
         {% endfor %}
       </select>
     </div>
 
     <div class="mb-4">
-      <label for="nama_kegiatan" class="form-label fw-bold">Nama</label>
-      <input type="text" id="nama_kegiatan" name="nama_kegiatan" class="form-control" required>
+      <label for="nama_kegiatan" class="form-label fw-bold">Nama <span class="text-danger">*</span></label>
+      <input type="text" id="nama_kegiatan" name="nama_kegiatan" class="form-control" value="{{ old_data.nama_kegiatan|default:'' }}" required>
     </div>
 
     <div class="mb-4">
-      <label for="gambar_kegiatan" class="form-label fw-bold">Gambar Utama</label>
+      <label for="gambar_kegiatan" class="form-label fw-bold">Gambar Utama <span class="text-danger">*</span></label>
       <input type="file" id="gambar_kegiatan" name="gambar_kegiatan" class="form-control" accept="image/*" required>
       <div class="form-text">Gambar utama yang akan ditampilkan sebagai thumbnail</div>
     </div>
@@ -52,8 +52,8 @@
     </div>
 
     <div class="mb-4">
-      <label for="deskripsi_kegiatan" class="form-label fw-bold">Deskripsi</label>
-      <textarea id="deskripsi_kegiatan" name="deskripsi_kegiatan" class="form-control" rows="4" required></textarea>
+      <label for="deskripsi_kegiatan" class="form-label fw-bold">Deskripsi <span class="text-danger">*</span></label>
+      <textarea id="deskripsi_kegiatan" name="deskripsi_kegiatan" class="form-control" rows="4" required>{{ old_data.deskripsi_kegiatan|default:'' }}</textarea>
     </div>
 
     <div class="mb-4">

@@ -13,23 +13,30 @@
     {% csrf_token %}
 
     <div class="mb-3">
-        <label for="id_kategori" class="form-label fw-bold">Kategori</label>
-        <select name="id_kategori" id="id_kategori" class="form-select">
-            <option value="{{ getproduk.id_kategori.id_kategori }}" selected hidden>{{ getproduk.id_kategori}}</option>
+        <label for="id_kategori" class="form-label fw-bold">Kategori <span class="text-danger">*</span></label>
+        <select name="id_kategori" id="id_kategori" class="form-select" required>
+            <option value="">Pilih Kategori</option>
             {% for i in kategoriobj %}
-            <option value="{{ i.id_kategori }}">{{ i.nama_kategori }}</option>
+            <option value="{{ i.id_kategori }}" 
+                {% if old_data %}
+                    {% if old_data.id_kategori == i.id_kategori|stringformat:"s" %}selected{% endif %}
+                {% else %}
+                    {% if getproduk.id_kategori.id_kategori == i.id_kategori %}selected{% endif %}
+                {% endif %}>
+                {{ i.nama_kategori }}
+            </option>
             {% endfor %}
       </select>
     </div>
 
     <div class="mb-4">
-      <label for="nama_produk" class="form-label fw-bold">Nama</label>
-      <input type="text" id="nama_produk" name="nama_produk" class="form-control" value="{{ getproduk.nama_produk }}" required>
+      <label for="nama_produk" class="form-label fw-bold">Nama <span class="text-danger">*</span></label>
+      <input type="text" id="nama_produk" name="nama_produk" class="form-control" value="{{ old_data.nama_produk|default:getproduk.nama_produk }}" required>
     </div>
     
     <div class="mb-4">
-      <label for="nama_produk" class="form-label fw-bold">Nomor Telepon</label>
-      <input type="tel" id="nomor_telepon" name="nomor_telepon" class="form-control" value="{{ getproduk.nomor_telepon }}" required>
+      <label for="nomor_telepon" class="form-label fw-bold">Nomor Telepon <span class="text-danger">*</span></label>
+      <input type="tel" id="nomor_telepon" name="nomor_telepon" class="form-control" value="{{ old_data.nomor_telepon|default:getproduk.nomor_telepon }}" required>
     </div>
 
     <div class="mb-4">
@@ -73,24 +80,24 @@
 
 
     <div class="mb-4">
-      <label for="deskripsi_produk" class="form-label fw-bold">Deskripsi</label>
-      <textarea id="deskripsi_produk" name="deskripsi_produk" class="form-control" rows="4" required>{{ getproduk.deskripsi_produk }}</textarea>
+      <label for="deskripsi_produk" class="form-label fw-bold">Deskripsi <span class="text-danger">*</span></label>
+      <textarea id="deskripsi_produk" name="deskripsi_produk" class="form-control" rows="4" required>{{ old_data.deskripsi_produk|default:getproduk.deskripsi_produk }}</textarea>
     </div>
 
 
     <div class="mb-4">
       <label for="link_shopee" class="form-label fw-bold">Link Shopee</label>
-      <input type="url" id="link_shopee" name="link_shopee" class="form-control" value="{{ getproduk.link_shopee }}" required>
+      <input type="url" id="link_shopee" name="link_shopee" class="form-control" value="{{ old_data.link_shopee|default:getproduk.link_shopee }}">
     </div>  
     
     <div class="mb-4">
       <label for="link_tokopedia" class="form-label fw-bold">Link Tokopedia</label>
-      <input type="url" id="link_tokopedia" name="link_tokopedia" class="form-control" value="{{ getproduk.link_tokopedia }}" required>
+      <input type="url" id="link_tokopedia" name="link_tokopedia" class="form-control" value="{{ old_data.link_tokopedia|default:getproduk.link_tokopedia }}">
     </div>
 
     <div class="mb-4">
-      <label for="deskripsi_produk" class="form-label fw-bold">Harga</label>
-      <input type="number" id="harga_produk" name="harga_produk" step="0.01" class="form-control" value="{{ getproduk.harga_produk }}" required>
+      <label for="harga_produk" class="form-label fw-bold">Harga <span class="text-danger">*</span></label>
+      <input type="number" id="harga_produk" name="harga_produk" step="0.01" class="form-control" value="{{ old_data.harga_produk|default:getproduk.harga_produk }}" required>
     </div>
     
     <div class="mb-4">

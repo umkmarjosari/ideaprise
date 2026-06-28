@@ -8,8 +8,8 @@
     
 
     <div class="mb-4">
-      <label for="nama_bundling" class="form-label">Nama</label>
-      <input type="text" id="nama_bundling" name="nama_bundling" class="form-control" value="{{ bundling.nama_bundling }}" required>
+      <label for="nama_bundling" class="form-label">Nama <span class="text-danger">*</span></label>
+      <input type="text" id="nama_bundling" name="nama_bundling" class="form-control" value="{{ old_data.nama_bundling|default:bundling.nama_bundling }}" required>
     </div>
 
     <div class="mb-4">
@@ -48,23 +48,23 @@
     </div>
 
     <div class="mb-4">
-      <label for="deskripsi_bundling" class="form-label">Deskripsi</label>
-      <textarea id="deskripsi_bundling" name="deskripsi_bundling" class="form-control" rows="4" required>{{ bundling.deskripsi_bundling }}</textarea>
+      <label for="deskripsi_bundling" class="form-label">Deskripsi <span class="text-danger">*</span></label>
+      <textarea id="deskripsi_bundling" name="deskripsi_bundling" class="form-control" rows="4" required>{{ old_data.deskripsi_bundling|default:bundling.deskripsi_bundling }}</textarea>
     </div>
 
     <div class="mb-4">
-      <label for="harga_bundling" class="form-label">Harga</label>
-      <input type="number" id="harga_bundling" name="harga_bundling" class="form-control" value="{{ bundling.harga_bundling }}"required>
+      <label for="harga_bundling" class="form-label">Harga <span class="text-danger">*</span></label>
+      <input type="number" id="harga_bundling" name="harga_bundling" class="form-control" value="{{ old_data.harga_bundling|default:bundling.harga_bundling }}" required>
     </div>
 
     <div class="mb-4">
       <label for="link_shopee" class="form-label">Link Shopee</label>
-      <input type="url" id="link_shopee" name="link_shopee" class="form-control" value="{{ bundling.link_shopee}}" required>
+      <input type="url" id="link_shopee" name="link_shopee" class="form-control" value="{{ old_data.link_shopee|default:bundling.link_shopee }}">
     </div>
 
     <div class="mb-4">
       <label for="link_tokopedia" class="form-label">Link Tokopedia</label>
-      <input type="url" id="link_tokopedia" name="link_tokopedia" class="form-control" value="{{ bundling.link_tokopedia }}" required>
+      <input type="url" id="link_tokopedia" name="link_tokopedia" class="form-control" value="{{ old_data.link_tokopedia|default:bundling.link_tokopedia }}">
     </div>
 
     <div class="row mb-4">

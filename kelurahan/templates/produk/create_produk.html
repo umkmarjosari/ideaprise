@@ -14,37 +14,38 @@
     
     <!-- Kategori -->
     <div class="mb-3">
-      <label for="id_kategori" class="form-label">Kategori</label>
-      <select name="id_kategori" id="id_kategori" class="form-select">
+      <label for="id_kategori" class="form-label">Kategori <span class="text-danger">*</span></label>
+      <select name="id_kategori" id="id_kategori" class="form-select" required>
         <option value="">Pilih Kategori</option>
         {% for i in kategoriobj %}
-          <option value="{{ i.id_kategori }}">{{ i.nama_kategori }}</option>
+          <option value="{{ i.id_kategori }}" {% if old_data.id_kategori == i.id_kategori|stringformat:"s" %}selected{% endif %}>{{ i.nama_kategori }}</option>
         {% endfor %}
       </select>
     </div>
 
     <!-- Nama Produk -->
-    <div class="mb-4">
-      <label for="nama_produk" class="form-label">Nama</label>
-      <input type="text" id="nama_produk" name="nama_produk" class="form-control" required>
+    <div class="mb-3">
+      <label for="nama_produk" class="form-label">Nama <span class="text-danger">*</span></label>
+      <input type="text" id="nama_produk" name="nama_produk" class="form-control" value="{{ old_data.nama_produk|default:'' }}" required>
     </div>
     
     <!-- Nomor Telepon -->
-    <div class="mb-4">
-      <label for="nomor_telepon" class="form-label">Nomor Telepon</label>
-      <input type="tel" id="nomor_telepon" name="nomor_telepon" class="form-control" required>
+    <div class="mb-3">
+      <label for="nomor_telepon" class="form-label">Nomor Telepon <span class="text-danger">*</span></label>
+      <input type="text" id="nomor_telepon" name="nomor_telepon" class="form-control" value="{{ old_data.nomor_telepon|default:'' }}" required>
     </div>
 
     <!-- Gambar Produk -->
     <div class="mb-4">
-      <label for="gambar_produk" class="form-label">Gambar Produk</label>
-      <input type="file" id="gambar_produk" name="gambar_produk" accept="image/*" class="form-control" required>
+      <label for="gambar_produk" class="form-label">Gambar Produk <span class="text-danger">*</span></label>
+      <input type="file" id="gambar_produk" name="gambar_produk" class="form-control" accept="image/*" required>
+      <small class="text-muted">Abaikan jika tidak ingin mengubah gambar.</small>
     </div>
 
-    <!-- Thumbnail Crop Upload -->
+    <!-- Thumbnail Produk (Kotak) -->
     <div class="mb-4">
-      <label for="thumbnail_crop" class="form-label">Thumbnail Produk (1:1)</label>
-      <input type="file" id="thumbnail_crop" accept="image/*" class="form-control">
+      <label for="thumbnail_crop" class="form-label">Thumbnail Produk (1:1) <span class="text-danger">*</span></label>
+      <input type="file" id="thumbnail_input" class="form-control" accept="image/*" required>
       <input type="hidden" name="thumbnail_base64" id="thumbnail_base64">
     </div>
 
@@ -66,28 +67,28 @@
       <img id="thumbnail_preview" style="max-width: 200px; border:1px solid #ccc;" />
     </div>
 
-    <!-- Deskripsi -->
-    <div class="mb-4">
-      <label for="deskripsi_produk" class="form-label">Deskripsi</label>
-      <textarea id="deskripsi_produk" name="deskripsi_produk" class="form-control" rows="4" required></textarea>
+    <!-- Deskripsi Produk -->
+    <div class="mb-3">
+      <label for="deskripsi_produk" class="form-label">Deskripsi <span class="text-danger">*</span></label>
+      <textarea id="deskripsi_produk" name="deskripsi_produk" class="form-control" rows="4" required>{{ old_data.deskripsi_produk|default:'' }}</textarea>
     </div>
 
    <!-- Link Shopee -->
-    <div class="mb-4">
+    <div class="mb-3">
       <label for="link_shopee" class="form-label">Link Shopee</label>
-      <input type="url" id="link_shopee" name="link_shopee" class="form-control">
+      <input type="url" id="link_shopee" name="link_shopee" class="form-control" value="{{ old_data.link_shopee|default:'' }}">
     </div>
 
     <!-- Link Tokopedia -->
-    <div class="mb-4">
+    <div class="mb-3">
       <label for="link_tokopedia" class="form-label">Link Tokopedia</label>
-      <input type="url" id="link_tokopedia" name="link_tokopedia" class="form-control">
+      <input type="url" id="link_tokopedia" name="link_tokopedia" class="form-control" value="{{ old_data.link_tokopedia|default:'' }}">
     </div>
 
     <!-- Harga -->
-    <div class="mb-4">
-      <label for="harga_produk" class="form-label">Harga</label>
-      <input type="number" id="harga_produk" name="harga_produk" step="0.01" class="form-control" required>
+    <div class="mb-3">
+      <label for="harga_produk" class="form-label">Harga <span class="text-danger">*</span></label>
+      <input type="text" id="harga_produk" name="harga_produk" class="form-control" value="{{ old_data.harga_produk|default:'' }}" required>
     </div>
 
     <!-- Submit -->

@@ -79,12 +79,13 @@ def create_kategori(request):
         nk = request.POST.get('nama_kategori') #yang kanan harus sesuai name di html
         if not nk:
             messages.error(request, 'Nama kategori tidak boleh kosong!')
-            return render(request, 'kategori/create_kategori.html')
+            return render(request, 'kategori/create_kategori.html', {'old_data': request.POST})
 
         kategoriobj = Kategori.objects.filter(nama_kategori=nk) 
 
         if kategoriobj.exists():
             messages.error(request, 'Kategori ini sudah ada!')
+            return render(request, 'kategori/create_kategori.html', {'old_data': request.POST})
         else:
             Kategori(
                 nama_kategori= nk,
@@ -119,13 +120,13 @@ def update_kategori(request, id):
         
         if not nk:
             messages.error(request, 'Nama kategori tidak boleh kosong!')
-            return redirect('update_kategori', id)
+            return render(request, 'kategori/update_kategori.html', {'getkategori': getkategori, 'old_data': request.POST})
             
         cekkategorikak = Kategori.objects.filter(nama_kategori=nk).exclude(id_kategori=id) #ngefilter kolom database nama produk berdasarkan np yg diinput user kecuali nama produknya sendiri berdasarkan id
         
         if cekkategorikak.exists(): #cek apakah ada produk lain dgn nama produk yg diupdate 
             messages.error(request, 'Kategori ini sudah ada!')
-            return redirect('update_kategori', id) #pake parameter id karena html update b/o id 
+            return render(request, 'kategori/update_kategori.html', {'getkategori': getkategori, 'old_data': request.POST}) #pake parameter id karena html update b/o id 
 
         getkategori.nama_kategori = nk #di savenya bukan ke models produk krn yg diperbarui data produk per id yg mana query data produk per id udh didefinisikan di var getproduk sblmnya
         getkategori.save()
@@ -169,10 +170,11 @@ def create_kegiatan(request):
             datakategori = Kategori.objects.get(id_kategori = idk)
         except (Kategori.DoesNotExist, ValueError):
             messages.error(request, "Kategori tidak ditemukan atau tidak valid.")
-            return redirect('create_kegiatan')
+            return render(request, 'kegiatan/create_kegiatan.html', {'kategoriobj': Kategori.objects.all(), 'old_data': request.POST})
 
         if kegiatanobj.exists():
             messages.error(request, 'Kegiatan ini sudah ada!')
+            return render(request, 'kegiatan/create_kegiatan.html', {'kategoriobj': Kategori.objects.all(), 'old_data': request.POST})
         else:
             # Simpan kegiatan utama
             kegiatan_baru = Kegiatan(
@@ -238,11 +240,19 @@ def update_kegiatan(request, id):
             datakategori = Kategori.objects.get(id_kategori = idk)
         except (Kategori.DoesNotExist, ValueError):
             messages.error(request, "Kategori tidak ditemukan atau tidak valid.")
-            return redirect('update_kegiatan', id)
+            return render(request, 'kegiatan/update_kegiatan.html', {
+                'getkegiatan': getkegiatan, 'kategoriobj': Kategori.objects.all(),
+                'gambar_tambahan_existing': GambarKegiatan.objects.filter(id_kegiatan=getkegiatan),
+                'old_data': request.POST
+            })
 
         if cekkegiatankak.exists():
             messages.error(request, 'Kegiatan ini sudah ada!')
-            return redirect('update_kegiatan', id)
+            return render(request, 'kegiatan/update_kegiatan.html', {
+                'getkegiatan': getkegiatan, 'kategoriobj': Kategori.objects.all(),
+                'gambar_tambahan_existing': GambarKegiatan.objects.filter(id_kegiatan=getkegiatan),
+                'old_data': request.POST
+            })
 
         getkegiatan.id_kategori = datakategori
         getkegiatan.nama_kegiatan = nkn
@@ -325,19 +335,19 @@ def create_produk(request):
         # Cek apakah produk sudah ada
         if Produk.objects.filter(nama_produk=np).exists():
             messages.error(request, 'Produk ini sudah ada!')
-            return redirect('read_produk')
+            return render(request, 'produk/create_produk.html', {'kategoriobj': Kategori.objects.all(), 'old_data': request.POST})
 
         # Validasi: minimal salah satu link harus diisi
         if not link_shopee and not link_tokopedia:
             messages.error(request, "Minimal isi salah satu link: Shopee atau Tokopedia.")
-            return redirect('create_produk')
+            return render(request, 'produk/create_produk.html', {'kategoriobj': Kategori.objects.all(), 'old_data': request.POST})
 
         # Ambil data kategori
         try:
             datakategori = Kategori.objects.get(id_kategori=idk)
         except (Kategori.DoesNotExist, ValueError):
             messages.error(request, "Kategori tidak ditemukan.")
-            return redirect('create_produk')
+            return render(request, 'produk/create_produk.html', {'kategoriobj': Kategori.objects.all(), 'old_data': request.POST})
 
         # Konversi thumbnail base64 ke file
         thumbnail_file = None
@@ -398,19 +408,19 @@ def update_produk(request, id):
     # Validasi wajib diisi
     if not all([idk, np, nt, dp, ls, lt, hp]):
         messages.error(request, 'Semua field wajib diisi!')
-        return redirect('update_produk', id)
+        return render(request, 'produk/update_produk.html', {'getproduk': getproduk, 'kategoriobj': kategoriobj, 'old_data': request.POST})
 
     # Cek nama produk agar tidak duplikat
     if Produk.objects.filter(nama_produk=np).exclude(id_produk=id).exists():
         messages.error(request, 'Produk ini sudah ada!')
-        return redirect('update_produk', id)
+        return render(request, 'produk/update_produk.html', {'getproduk': getproduk, 'kategoriobj': kategoriobj, 'old_data': request.POST})
 
     # Update produk
     try:
         kategori_obj = Kategori.objects.get(id_kategori=idk)
     except (Kategori.DoesNotExist, ValueError):
         messages.error(request, 'Kategori tidak ditemukan.')
-        return redirect('update_produk', id)
+        return render(request, 'produk/update_produk.html', {'getproduk': getproduk, 'kategoriobj': kategoriobj, 'old_data': request.POST})
 
     getproduk.id_kategori = kategori_obj
     getproduk.nama_produk = np
@@ -480,7 +490,7 @@ def create_bundling(request):
 
         if bundlings.exists():
             messages.error(request, 'Nama bundling ini sudah ada!')
-            return render(request, 'bundling/create_bundling.html', {'produkobj': produkobj})
+            return render(request, 'bundling/create_bundling.html', {'produkobj': produkobj, 'old_data': request.POST})
 
         if tb64 and "base64," in tb64:
             format, imgstr = tb64.split(';base64,')

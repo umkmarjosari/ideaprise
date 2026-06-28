@@ -13,18 +13,25 @@
     {% csrf_token %}
     
     <div class="mb-3">
-      <label for="id_kategori" class="form-label">Kategori</label>
-      <select name="id_kategori" id="id_kategori" class="form-select">
-        <option value="{{ getkegiatan.id_kategori.id_kategori }}" selected>{{ getkegiatan.id_kategori}}</option>
+      <label for="id_kategori" class="form-label">Kategori <span class="text-danger">*</span></label>
+      <select name="id_kategori" id="id_kategori" class="form-select" required>
+        <option value="">Pilih Kategori</option>
         {% for i in kategoriobj %}
-          <option value="{{ i.id_kategori }}">{{ i.nama_kategori}}</option>
+          <option value="{{ i.id_kategori }}" 
+            {% if old_data %}
+                {% if old_data.id_kategori == i.id_kategori|stringformat:"s" %}selected{% endif %}
+            {% else %}
+                {% if getkegiatan.id_kategori.id_kategori == i.id_kategori %}selected{% endif %}
+            {% endif %}>
+            {{ i.nama_kategori }}
+          </option>
         {% endfor %}
       </select>
     </div>
 
     <div class="mb-4">
-      <label for="nama_kegiatan" class="form-label">Nama Kegiatan</label>
-      <input type="text" id="nama_kegiatan" value="{{ getkegiatan.nama_kegiatan }}" name="nama_kegiatan" class="form-control" required>
+      <label for="nama_kegiatan" class="form-label">Nama Kegiatan <span class="text-danger">*</span></label>
+      <input type="text" id="nama_kegiatan" name="nama_kegiatan" class="form-control" value="{{ old_data.nama_kegiatan|default:getkegiatan.nama_kegiatan }}" required>
     </div>
 
     <div class="mb-4">
@@ -93,8 +100,8 @@
   </button>
 </div>
     <div class="mb-4">
-      <label for="deskripsi_kegiatan" class="form-label">Deskripsi Kegiatan</label>
-      <textarea id="deskripsi_kegiatan" name="deskripsi_kegiatan" class="form-control" rows="4">{{ getkegiatan.deskripsi_kegiatan }}</textarea>
+      <label for="deskripsi_kegiatan" class="form-label">Deskripsi Kegiatan <span class="text-danger">*</span></label>
+      <textarea id="deskripsi_kegiatan" name="deskripsi_kegiatan" class="form-control" rows="4" required>{{ old_data.deskripsi_kegiatan|default:getkegiatan.deskripsi_kegiatan }}</textarea>
     </div>
 
     <div class="mb-4">

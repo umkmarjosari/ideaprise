@@ -13,8 +13,8 @@
     {% csrf_token %}
 
     <div class="mb-4">
-      <label for="nama_kategori" class="form-label">Nama</label>
-      <input type="text" id="nama_kategori" name="nama_kategori" class="form-control" required>
+      <label for="nama_kategori" class="form-label">Nama <span class="text-danger">*</span></label>
+      <input type="text" id="nama_kategori" name="nama_kategori" class="form-control" value="{{ old_data.nama_kategori|default:'' }}" required>
     </div>
 
     <div class="mb-4">
