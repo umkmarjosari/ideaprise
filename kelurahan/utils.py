@@ -21,5 +21,5 @@ def compress_image(image, max_width=1200, quality=85):
         output, 'ImageField',
         f"{image.name.split('.')[0]}.jpg",
         'image/jpeg',
-        sys.getsizeof(output), None
+        len(output.getbuffer()), None
     )

@@ -79,6 +79,7 @@ def create_kategori(request):
         nk = request.POST.get('nama_kategori') #yang kanan harus sesuai name di html
         if not nk:
             messages.error(request, 'Nama kategori tidak boleh kosong!')
+            return render(request, 'kategori/create_kategori.html')
 
         kategoriobj = Kategori.objects.filter(nama_kategori=nk) 
 
@@ -116,6 +117,10 @@ def update_kategori(request, id):
     else:
         nk = request.POST.get('nama_kategori') #yang kanan harus sesuai name di html
         
+        if not nk:
+            messages.error(request, 'Nama kategori tidak boleh kosong!')
+            return redirect('update_kategori', id)
+            
         cekkategorikak = Kategori.objects.filter(nama_kategori=nk).exclude(id_kategori=id) #ngefilter kolom database nama produk berdasarkan np yg diinput user kecuali nama produknya sendiri berdasarkan id
         
         if cekkategorikak.exists(): #cek apakah ada produk lain dgn nama produk yg diupdate 
@@ -144,8 +149,6 @@ def delete_kategori(request, id):
 # CRUD DATA KEGIATAN dengan multiple images
 @login_required(login_url="login")
 @role_required(['admin']) 
-@login_required(login_url="login")
-@role_required(['admin']) 
 def create_kegiatan(request):
     kategoriobj = Kategori.objects.all()
     if request.method == 'GET':
@@ -161,7 +164,12 @@ def create_kegiatan(request):
         keterangan_gambar = request.POST.getlist('keterangan_gambar')
 
         kegiatanobj = Kegiatan.objects.filter(nama_kegiatan=nkn) 
-        datakategori = Kategori.objects.get(id_kategori = idk)
+        
+        try:
+            datakategori = Kategori.objects.get(id_kategori = idk)
+        except (Kategori.DoesNotExist, ValueError):
+            messages.error(request, "Kategori tidak ditemukan atau tidak valid.")
+            return redirect('create_kegiatan')
 
         if kegiatanobj.exists():
             messages.error(request, 'Kegiatan ini sudah ada!')
@@ -201,16 +209,10 @@ def read_kegiatan(request):
 @login_required(login_url="login")
 @role_required(['admin']) 
 def update_kegiatan(request, id):
-    get_gambar = get_object_or_404(Kegiatan,id_kegiatan=id)
-    gambar_lama = get_gambar.gambar_kegiatan
+    getkegiatan = get_object_or_404(Kegiatan,id_kegiatan=id)
+    gambar_lama = getkegiatan.gambar_kegiatan
     kategoriobj = Kategori.objects.all()
-    gambar_tambahan_existing = GambarKegiatan.objects.filter(id_kegiatan=get_gambar)
-    
-    try:
-        getkegiatan = Kegiatan.objects.get(id_kegiatan=id)  
-    except Kegiatan.DoesNotExist:
-        messages.error(request, 'Kegiatan tidak ditemukan.')
-        return redirect('read_kegiatan')
+    gambar_tambahan_existing = GambarKegiatan.objects.filter(id_kegiatan=getkegiatan)
 
     if request.method == 'GET':
         return render(request, 'kegiatan/update_kegiatan.html', {
@@ -231,7 +233,12 @@ def update_kegiatan(request, id):
         hapus_gambar = request.POST.getlist('hapus_gambar')
 
         cekkegiatankak = Kegiatan.objects.filter(nama_kegiatan=nkn).exclude(id_kegiatan=id)
-        datakategori = Kategori.objects.get(id_kategori = idk)
+        
+        try:
+            datakategori = Kategori.objects.get(id_kategori = idk)
+        except (Kategori.DoesNotExist, ValueError):
+            messages.error(request, "Kategori tidak ditemukan atau tidak valid.")
+            return redirect('update_kegiatan', id)
 
         if cekkegiatankak.exists():
             messages.error(request, 'Kegiatan ini sudah ada!')
@@ -328,7 +335,7 @@ def create_produk(request):
         # Ambil data kategori
         try:
             datakategori = Kategori.objects.get(id_kategori=idk)
-        except Kategori.DoesNotExist:
+        except (Kategori.DoesNotExist, ValueError):
             messages.error(request, "Kategori tidak ditemukan.")
             return redirect('create_produk')
 
@@ -401,7 +408,7 @@ def update_produk(request, id):
     # Update produk
     try:
         kategori_obj = Kategori.objects.get(id_kategori=idk)
-    except Kategori.DoesNotExist:
+    except (Kategori.DoesNotExist, ValueError):
         messages.error(request, 'Kategori tidak ditemukan.')
         return redirect('update_produk', id)
 
@@ -492,10 +499,14 @@ def create_bundling(request):
         databundling.save()
 
         for produks in pd:
-            DetailBundling(
-                id_bundling = databundling,
-                id_produk = Produk.objects.get(id_produk = produks),
-            ).save()
+            try:
+                prod = Produk.objects.get(id_produk = produks)
+                DetailBundling(
+                    id_bundling = databundling,
+                    id_produk = prod,
+                ).save()
+            except (Produk.DoesNotExist, ValueError):
+                continue
 
         messages.success(request, 'Data bundling berhasil ditambahkan!')
     return redirect("read_bundling")
@@ -512,47 +523,6 @@ def read_bundling(request):
         return render(request, 'bundling/read_bundling.html', {
             'detailbundlingobj':detailbundlingobj,
             'bundlingobj':bundlingobj})
-
-# def update_bundling(request, id):
-    get_gambar = get_object_or_404(Bundling,id_bundling=id)
-    gambar_lama = get_gambar.gambar_bundling
-
-    try:
-        getdetailobj = DetailBundling.objects.get(id_db=id)
-        
-    except DetailBundling.DoesNotExist:
-        messages.error(request, "Data Bundling tidak ditemukan!")
-        return redirect('read_bundling')
-    produkobj = Produk.objects.all()
-  
-    if request.method == "GET":
-        return render(request, 'bundling/update_bundling.html', {
-            'getdetailobj': getdetailobj,
-            'produkobj' : produkobj,
-        })
-    else:     
-        nb = request.POST.get('nama_bundling')
-        gb = request.POST.get('gambar_bundling')
-        hb = request.POST.get('harga_bundling')
-        lb = request.POST.get('link_bundling')
-        db = request.POST.get('deskripsi_bundling')
-
-        getproduk = Produk.objects.get(id_produk = request.POST["produk"])
-        getdetailobj.id_produk = getproduk
-        getdetailobj.id_bundling.nama_bundling = nb
-        getdetailobj.id_bundling.harga_bundling = hb
-        getdetailobj.id_bundling.link_bundling = lb
-        getdetailobj.id_bundling.deskripsi_bundling = db
-
-        if gb:  # hanya update kalau user upload gambar baru
-            getdetailobj.id_bundling.gambar_bundling = gb
-        else:
-           getdetailobj.id_bundling.gambar_bundling =gambar_lama
-
-        getdetailobj.save()
-        
-        messages.success(request,"Data bundling berhasil diperbarui!")
-        return redirect('read_bundling')
 
 
 @login_required(login_url="login")
