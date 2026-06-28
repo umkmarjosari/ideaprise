@@ -161,8 +161,11 @@ if os.environ.get('USE_SUPABASE_STORAGE', 'False').lower() == 'true':
     AWS_ACCESS_KEY_ID = os.environ.get('SUPABASE_S3_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.environ.get('SUPABASE_S3_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = os.environ.get('SUPABASE_S3_BUCKET_NAME')
-    AWS_S3_ENDPOINT_URL = os.environ.get('SUPABASE_S3_ENDPOINT_URL')
-    AWS_S3_REGION_NAME = os.environ.get('SUPABASE_S3_REGION_NAME', 'ap-southeast-1')
+    
+    _endpoint = os.environ.get('SUPABASE_S3_ENDPOINT_URL')
+    AWS_S3_ENDPOINT_URL = _endpoint.rstrip('/') if _endpoint else None
+    
+    AWS_S3_REGION_NAME = os.environ.get('SUPABASE_S3_REGION_NAME', 'ap-northeast-1')
     
     # Supabase S3 requires path-style addressing and S3v4 signature
     AWS_S3_ADDRESSING_STYLE = 'path'
