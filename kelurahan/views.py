@@ -51,6 +51,8 @@ def performlogin(request):
             
             if userobj.groups.filter(name='admin').exists():
                 return redirect("base")
+            else :
+                return redirect("base")
             
         else:
             messages.error(request, "Username atau Password salah !!!")
