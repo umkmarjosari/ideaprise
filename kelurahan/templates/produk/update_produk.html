@@ -1,0 +1,162 @@
+{% extends "base/base.html" %}
+
+{% block content %}
+<div class="hero" style="background: linear-gradient(to right, #023E8A, #00B4D8); padding: 2rem 0; color: white; margin-bottom: 3rem;">
+  <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+    <h1 style="color: white; margin: 0; font-size: 2.5rem;">Produk</h1>    
+  </div>    
+</div>
+
+<div class="container mt-5">
+  <h2 class="mb-4">Update Produk</h2>
+  <form method="POST" enctype="multipart/form-data" >
+    {% csrf_token %}
+
+    <div class="mb-3">
+        <label for="id_kategori" class="form-label fw-bold">Kategori</label>
+        <select name="id_kategori" id="id_kategori" class="form-select">
+            <option value="{{ getproduk.id_kategori.id_kategori }}" selected hidden>{{ getproduk.id_kategori}}</option>
+            {% for i in kategoriobj %}
+            <option value="{{ i.id_kategori }}">{{ i.nama_kategori }}</option>
+            {% endfor %}
+      </select>
+    </div>
+
+    <div class="mb-4">
+      <label for="nama_produk" class="form-label fw-bold">Nama</label>
+      <input type="text" id="nama_produk" name="nama_produk" class="form-control" value="{{ getproduk.nama_produk }}" required>
+    </div>
+    
+    <div class="mb-4">
+      <label for="nama_produk" class="form-label fw-bold">Nomor Telepon</label>
+      <input type="tel" id="nomor_telepon" name="nomor_telepon" class="form-control" value="{{ getproduk.nomor_telepon }}" required>
+    </div>
+
+    <div class="mb-4">
+      <label for="gambar_produk" class="form-label fw-bold">Gambar</label>
+        <input type="file" id="gambar_produk" name="gambar_produk" class="form-control">
+        {% if getproduk.gambar_produk %}
+          <img src="{{ getproduk.gambar_produk.url }}" alt="Gambar Produk" style="max-width:200px;">
+        {% else %}
+          <p><em>Tidak ada gambar</em></p>
+        {% endif %}
+    </div>
+
+    <div class="mb-4">
+      <label for="thumbnail_crop" class="form-label fw-bold">Thumbnail Produk (1:1)</label>
+      <input type="file" id="thumbnail_crop" accept="image/*" class="form-control">
+      <img src="{{ getproduk.thumbnail_produk.url }}" alt="Gambar Produk" style="max-width:200px;">
+      <input type="hidden" name="thumbnail_base64" id="thumbnail_base64">
+    </div>
+
+    <!-- Modal Crop -->
+    <div id="cropModal" style="display:none; position:fixed; z-index:9999; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center;">
+      <div style="background:white; padding:20px; border-radius:10px; max-width:90vw; max-height:90vh;">
+        <div style="max-height: 70vh; overflow:auto;">
+          <img id="cropImage" style="max-width: 100%; display:block;">
+        </div>
+        <div style="text-align:right; margin-top:10px;">
+          <button type="button" id="cropSave" class="btn btn-primary">Crop & Upload</button>
+          <button type="button" onclick="closeModal()" class="btn btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Thumbnail Preview -->
+    <div class="mb-3 mt-3">
+      {% if getproduk.thumbnail_produk %}
+        <img id="thumbnail_preview" src="{{ getproduk.thumbnail_produk.url }}" style="max-width: 200px; border:1px solid #ccc;" />
+      {% else %}
+        <img id="thumbnail_preview" style="max-width: 200px; border:1px solid #ccc;" />
+      {% endif %}
+    </div>
+
+
+    <div class="mb-4">
+      <label for="deskripsi_produk" class="form-label fw-bold">Deskripsi</label>
+      <input type="text" id="deskripsi_produk" name="deskripsi_produk" class="form-control" value="{{ getproduk.deskripsi_produk }}" required>
+    </div>
+
+
+    <div class="mb-4">
+      <label for="link_shopee" class="form-label fw-bold">Link Shopee</label>
+      <input type="url" id="link_shopee" name="link_shopee" class="form-control" value="{{ getproduk.link_shopee }}" required>
+    </div>  
+    
+    <div class="mb-4">
+      <label for="link_tokopedia" class="form-label fw-bold">Link Tokopedia</label>
+      <input type="url" id="link_tokopedia" name="link_tokopedia" class="form-control" value="{{ getproduk.link_tokopedia }}" required>
+    </div>
+
+    <div class="mb-4">
+      <label for="deskripsi_produk" class="form-label fw-bold">Harga</label>
+      <input type="number" id="harga_produk" name="harga_produk" step="0.01" class="form-control" value="{{ getproduk.harga_produk }}" required>
+    </div>
+    
+    <div class="mb-4">
+        <button type="submit" class="btn btn-primary">Perbarui</button>
+        <a href="{% url 'read_produk' %}" class="btn btn-secondary">Batal</a>
+    </div>
+
+  </form>
+</div>
+
+
+<!-- CropperJS CSS & JS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+<script>
+let cropper;
+const thumbnailInput = document.getElementById('thumbnail_crop');
+const cropModal = document.getElementById('cropModal');
+const cropImage = document.getElementById('cropImage');
+const thumbnailBase64 = document.getElementById('thumbnail_base64');
+const thumbnailPreview = document.getElementById('thumbnail_preview');
+
+// Buka modal ketika input gambar berubah
+thumbnailInput.addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    cropImage.src = event.target.result;
+    cropModal.style.display = 'flex';
+
+    if (cropper) cropper.destroy();
+    cropper = new Cropper(cropImage, {
+      aspectRatio: 1,
+      viewMode: 1,
+      autoCropArea: 1,
+      movable: true,
+      zoomable: true,
+      responsive: true
+    });
+  };
+  reader.readAsDataURL(file);
+});
+
+// Tombol simpan hasil crop
+document.getElementById('cropSave').addEventListener('click', function () {
+  if (!cropper) return;
+
+  const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 });
+  const base64 = canvas.toDataURL('image/jpeg');
+
+  thumbnailBase64.value = base64;
+  thumbnailPreview.src = base64;
+
+  closeModal();
+});
+
+// Tutup modal
+function closeModal() {
+  cropModal.style.display = 'none';
+  if (cropper) cropper.destroy();
+}
+</script>
+
+
+{% endblock content %}
+

@@ -1,0 +1,247 @@
+{% load static %}
+
+<!-- Start Header/Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow" aria-label="Furni navigation bar" >
+    <div class="container-fluid">
+        <!-- Brand -->
+        <a class="navbar-brand fw-bold text-primary" href="{% url 'base' %}" style="font-size: 2.5rem; letter-spacing: 0.1em;">
+            <img src="{% static 'images\logo_clean.png' %}" style="height: 110px; width: auto;">
+            ARJOSARI<span class="text-info">.</span>
+        </a>
+
+        <!-- Toggler -->
+        <button class="navbar-toggler border-0 text-primary" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsFurni"
+            aria-controls="navbarsFurni" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Menu Items -->
+        <div class="collapse navbar-collapse" id="navbarsFurni">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'base' %}active{% endif %}" 
+                       href="{% url 'base' %}">Beranda</a>
+                </li>
+
+                {% if request.user.is_authenticated %}
+                <!-- Kategori Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="dropdownKategori" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">Kategori</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'read_kategori' %}">Data Kategori</a></li>
+                        <li><a class="dropdown-item" href="{% url 'create_kategori' %}">Tambah Kategori</a></li>
+                    </ul>
+                </li>
+                {% endif %}
+
+                <!-- Kegiatan Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="dropdownKegiatan" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">Kegiatan</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'read_kegiatan' %}">Daftar Kegiatan</a></li>
+                        {% if request.user.is_authenticated %}
+                        <li><a class="dropdown-item" href="{% url 'create_kegiatan' %}">Tambah Kegiatan</a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+
+                <!-- Produk Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="dropdownProduk" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">Produk</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'read_produk' %}">Daftar Produk</a></li>
+                        {% if request.user.is_authenticated %}
+                        <li><a class="dropdown-item" href="{% url 'create_produk' %}">Tambah Produk</a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+
+                <!-- Bundling Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="dropdownBundling" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">Bundling</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{% url 'read_bundling' %}">Daftar Bundling</a></li>
+                        {% if request.user.is_authenticated %}
+                        <li><a class="dropdown-item" href="{% url 'create_bundling' %}">Tambah Bundling</a></li>
+                        {% endif %}
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!-- End Header/Navigation -->
+
+<style>
+/* Umum Navbar */
+.navbar {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
+    transition: all 0.3s ease;
+}
+.navbar-nav {
+    gap: 15px; 
+    align-items: center;
+}
+
+/* Nav Links - Interaktif & Non-Generic */
+.navbar-nav .nav-link {
+    color: #4b5563 !important; 
+    font-weight: 600;
+    font-size: 1.12rem; 
+    padding: 10px 22px !important; 
+    margin: 0 5px;
+    border-radius: 30px; 
+    position: relative;
+    transition: color 0.3s ease;
+    z-index: 1;
+}
+
+/* Efek Bouncy Gradient Pill di Background */
+.navbar-nav .nav-link::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, #00B4D8, #023E8A);
+    border-radius: 30px;
+    z-index: -1;
+    transform: scale(0.5);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy scale */
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    color: #ffffff !important;
+}
+
+.navbar-nav .nav-link:hover::before,
+.navbar-nav .nav-link.active::before {
+    transform: scale(1);
+    opacity: 1;
+}
+
+/* Perilaku Dropdown di Desktop */
+@media (min-width: 992px) {
+    .nav-item.dropdown:hover .dropdown-menu {
+        display: block;
+        animation: popDown 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        transform-origin: top center;
+    }
+}
+.navbar-nav .nav-item.dropdown:last-child .dropdown-menu {
+    right: 0;
+    left: auto;
+}
+
+/* Dropdown Menu Style */
+.dropdown-menu {
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 12px;
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.08);
+    padding: 10px;
+    margin-top: 15px;
+    min-width: 220px;
+    background-color: #fff;
+    opacity: 0;
+}
+
+.dropdown-menu .dropdown-item {
+    color: #4b5563;
+    font-weight: 500;
+    font-size: 1.05rem; 
+    padding: 10px 20px 10px 35px; /* Ruang untuk dot indikator */
+    border-radius: 8px; 
+    transition: all 0.2s ease;
+    margin-bottom: 3px;
+    position: relative;
+    background-color: transparent !important;
+}
+
+.dropdown-menu .dropdown-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Dot indikator yang 'Pop In' saat hover */
+.dropdown-menu .dropdown-item::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%) scale(0);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00B4D8, #023E8A);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.dropdown-menu .dropdown-item:hover {
+    color: #023E8A;
+    font-weight: 600;
+}
+
+.dropdown-menu .dropdown-item:hover::before {
+    transform: translateY(-50%) scale(1);
+}
+
+/* Animasi Bouncy Dropdown */
+@keyframes popDown {
+    0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Responsive untuk Mobile */
+@media (max-width: 991px) {
+    .navbar-brand {
+        font-size: 1.8rem !important;
+    }
+    .navbar-brand img {
+        height: 70px !important;
+    }
+    .navbar-nav {
+        gap: 10px;
+        margin-top: 15px;
+        width: 100%;
+    }
+    .navbar-nav .nav-link {
+        font-size: 1.1rem;
+        margin: 0;
+        text-align: center;
+        border-radius: 8px;
+    }
+    .navbar-nav .nav-link::before {
+        display: none; /* Matikan efek bouncy pill di mobile */
+    }
+    .navbar-nav .nav-link:hover {
+        background-color: #023E8A;
+        color: #fff !important;
+    }
+    nav.navbar {
+        padding-top: 0.8rem !important;
+        padding-bottom: 0.8rem !important;
+    }
+    .dropdown-menu {
+        border: none;
+        box-shadow: none;
+        background-color: #f8f9fa;
+        text-align: left;
+        padding: 10px;
+        opacity: 1;
+    }
+}
+</style>

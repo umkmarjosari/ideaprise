@@ -1,0 +1,246 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero" style="background: linear-gradient(to right, #023E8A, #00B4D8); padding: 2rem 0; color: white; margin-bottom: 3rem;">
+  <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+    <h1 style="color: white; margin: 0; font-size: 2.5rem;">Kegiatan</h1>    
+  </div>    
+</div>
+
+<!-- Konten -->
+<div style="background-color: transparent; padding: 3rem 0;">
+  <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+
+    {% if request.user.is_authenticated %}
+    <!-- Tabel Admin -->
+    <div class="card" style="background: white; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden;">
+      
+      <!-- Wrapper scroll -->
+      <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+        <table style="border-collapse: collapse; width: max-content; min-width: 100%;">
+          <thead style="background-color: #023E8A; color: white;">
+            <tr>
+              <th style="padding: 15px; text-align: center; white-space: nowrap;">No</th>
+              <th style="padding: 15px; text-align: center; white-space: nowrap;">ID Kegiatan</th>
+              <th style="padding: 15px; text-align: center; white-space: nowrap;">Kategori</th>
+              <th style="padding: 15px; text-align: center; white-space: nowrap;">Nama</th>
+              <th style="padding: 15px; text-align: center; white-space: nowrap;">Gambar</th>
+              <th style="padding: 15px; text-align: center; white-space: nowrap;">Total Gambar</th>
+              <th style="padding: 15px; text-align: center; white-space: nowrap;">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in kegiatanobj %}
+            <tr style="border-bottom: 1px solid #ADE8F4; cursor: pointer;" onclick="window.location='{% url 'read_detailkegiatan' i.id_kegiatan %}'">
+              <td style="padding: 15px; color: #023E8A; text-align: center; white-space: nowrap;">{{ forloop.counter }}</td>
+              <td style="padding: 15px; color: #023E8A; text-align: center; white-space: nowrap;">{{ i.id_kegiatan }}</td>
+              <td style="padding: 15px; color: #023E8A; text-align: center; white-space: nowrap;">{{ i.id_kategori.nama_kategori }}</td>
+              <td style="padding: 15px; color: #023E8A; text-align: center; white-space: nowrap;">{{ i.nama_kegiatan }}</td>
+              <td style="padding: 15px; text-align: center; white-space: nowrap;">
+                {% if i.gambar_kegiatan %}
+                <div style="position: relative; display: inline-block;">
+                  <img src="{{ i.gambar_kegiatan.url }}" alt="Gambar" width="80" style="border-radius: 4px;">
+                  {% if i.gambar_tambahan.count > 0 %}
+                  <span style="position: absolute; top: -5px; right: -5px; background: #E63946; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 10px; display: flex; align-items: center; justify-content: center;">+{{ i.gambar_tambahan.count }}</span>
+                  {% endif %}
+                </div>
+                {% else %}
+                <span style="color: gray;">-</span>
+                {% endif %}
+              </td>
+              <td style="padding: 15px; text-align: center; color: #023E8A; white-space: nowrap;">
+                <strong>{{ i.gambar_tambahan.count|add:1 }}</strong>
+              </td>
+              <td style="padding: 15px; text-align: center; white-space: nowrap;">
+                <a href="{% url 'update_kegiatan' i.id_kegiatan %}" 
+                  style="background-color: #0096C7; color: white; padding: 8px 12px; border-radius: 4px; text-decoration: none; font-size: 0.85rem; margin-right: 4px;">
+                  Update
+                </a>
+                <a href="{% url 'delete_kegiatan' i.id_kegiatan %}" 
+                  style="background-color: #E63946; color: white; padding: 8px 12px; border-radius: 4px; text-decoration: none; font-size: 0.85rem;"
+                  onclick="return confirm('Yakin ingin menghapus kegiatan ini beserta semua gambarnya?')">
+                  Delete
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <!-- End wrapper scroll -->
+
+    </div>
+  </div>
+</div>
+
+{% else %}
+    <style>
+      .kegiatan-card {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background: white;
+        text-decoration: none;
+      }
+      .kegiatan-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+      }
+      .kegiatan-img-wrapper {
+        position: relative;
+        padding-top: 66.66%; /* Rasio 3:2 */
+        overflow: hidden;
+        background: #f8f9fa;
+      }
+      .kegiatan-img-wrapper img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+      }
+      .kegiatan-card:hover .kegiatan-img-wrapper img {
+        transform: scale(1.05);
+      }
+      .kegiatan-badge-photo {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: rgba(255, 255, 255, 0.9);
+        color: #023E8A;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .kegiatan-badge-cat {
+        position: absolute;
+        bottom: 12px;
+        left: 12px;
+        background: rgba(2, 62, 138, 0.9);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-weight: 500;
+        font-size: 0.8rem;
+      }
+      .kegiatan-body {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+      }
+      .kegiatan-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 0.5rem;
+        line-height: 1.3;
+      }
+      .kegiatan-desc {
+        font-size: 0.95rem;
+        color: #64748b;
+        line-height: 1.6;
+        margin-bottom: 1.2rem;
+        flex-grow: 1;
+        display: -webkit-box;
+        -webkit-line-clamp: 5;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .kegiatan-btn {
+        background: #f1f5f9;
+        color: #023E8A;
+        font-weight: 600;
+        border-radius: 10px;
+        padding: 12px;
+        text-align: center;
+        transition: all 0.2s ease;
+        border: 1px solid #e2e8f0;
+        font-size: 1.05rem;
+      }
+      .kegiatan-card:hover .kegiatan-btn {
+        background: #023E8A;
+        color: white;
+        border-color: #023E8A;
+      }
+    </style>
+
+    <!-- Tampilan User (Card Layout) -->
+    <div class="container mb-5">
+      <div class="row g-4">
+        {% for i in kegiatanobj %}
+        <div class="col-12 col-lg-6">
+          <a href="{% url 'read_detailkegiatan' i.id_kegiatan %}" class="kegiatan-card">
+            
+            <div class="kegiatan-img-wrapper">
+              {% if i.gambar_kegiatan %}
+                <img src="{{ i.gambar_kegiatan.url }}" alt="{{ i.nama_kegiatan }}">
+              {% else %}
+                <img src="{% static 'images/default.jpg' %}" alt="default">
+              {% endif %}
+              
+              <!-- Badge Kategori -->
+              <div class="kegiatan-badge-cat">
+                {{ i.id_kategori.nama_kategori }}
+              </div>
+
+              <!-- Badge Multiple Images -->
+              {% if i.gambar_tambahan.count > 0 %}
+              <div class="kegiatan-badge-photo">
+                <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+                  <path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13zm13 1a.5.5 0 0 1 .5.5v6l-3.775-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12v.54A1.5 1.5 0 0 1 1.5 3h13z"/>
+                </svg>
+                {{ i.gambar_tambahan.count|add:1 }}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="kegiatan-body">
+              <h5 class="kegiatan-title">{{ i.nama_kegiatan }}</h5>
+              <div class="kegiatan-desc">
+                {{ i.deskripsi_kegiatan }}
+              </div>
+              
+              <div class="kegiatan-btn w-100">
+                {% if i.gambar_tambahan.count > 0 %}
+                Lihat Galeri
+                {% else %}
+                Lihat Detail
+                {% endif %}
+              </div>
+            </div>
+            
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {% if request.user.is_authenticated %}
+    <div class="text-center mt-4">
+      <a href="{% url 'create_kegiatan' %}" class="btn btn-primary btn-lg" style="background: linear-gradient(45deg, #023E8A, #0077B6); border: none; padding: 12px 30px;">
+        + Tambah Kegiatan Baru
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
+

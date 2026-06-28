@@ -1,0 +1,280 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- Import Poppins Font -->
+
+<!-- Hero Section -->
+<div class="hero" style="background: linear-gradient(to right, #023E8A, #00B4D8); padding: 2rem 0; color: white; margin-bottom: 1rem;">
+  <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+    <h1 style="color: white; margin: 0; font-size: 2.5rem;">Bundling</h1>  
+  </div>  
+</div>
+
+<!-- Main Content Container -->
+  {% if request.user.is_authenticated %}
+  <div style="background-color: white; padding: 3rem 0;">
+    <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+      <div class="card" style="background: white; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden;">
+        <div style="overflow-x: auto; width: 100%;">
+          <table style="width: 100%; border-collapse: collapse;">
+      <thead style="background-color: #023E8A; color: white;">
+        <tr>
+          <th style="padding: 15px; text-align: center;">No</th>
+          <th style="padding: 15px; text-align: center;">ID Bundling</th>
+          <th style="padding: 15px; text-align: center;">Nama Bundling</th>
+          <th style="padding: 15px; text-align: center;">Gambar</th>
+          <th style="padding: 15px; text-align: center;">Detail Bundling</th>
+          <th style="padding: 15px; text-align: center;">Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in bundlingobj %}
+        <tr style="border-bottom: 1px solid #E0F2F1;" onclick="window.location='{% url 'read_detailbundling' i.id_bundling %}'">
+          <td style="padding: 15px; color: #023E8A; text-align: center;">{{ forloop.counter }}</td>
+          <td style="padding: 15px; color: #023E8A; text-align: center;">
+            <a href="{% url 'read_detailbundling' i.id_bundling %}" style="color: #0077b6; text-decoration: none;">
+              {{ i.id_bundling }}
+            </a>
+          </td>
+          <td style="padding: 15px; color: #023E8A; text-align: center;">
+            <a href="{% url 'read_detailbundling' i.id_bundling %}" style="color: #0077b6; text-decoration: none; text-align: center;">
+              {{ i.nama_bundling }}
+            </a>
+          </td>
+          <td style="padding: 15px; text-align: center;">
+            {% if i.thumbnail_bundling %}
+              <img src="{{ i.thumbnail_bundling.url }}" alt="Thumbnail" style="height: 80px; object-fit: cover; border-radius: 5px;">
+            {% else %}
+              <span class="text-muted">Tidak ada gambar</span>
+            {% endif %}
+          </td>
+          <td style="padding: 15px; color: #023E8A; text-align: center;">
+            {% with detaillist=i.detailbundling_set.all %}
+              {% for x in detaillist %}
+                {{ x.id_produk.nama_produk }}{% if not forloop.last %}, {% endif %}
+              {% endfor %}
+            {% endwith %}
+          </td>
+          <td style="padding: 15px; text-align: center; white-space: nowrap;">
+            <a href="{% url 'update_bundling' i.id_bundling %}" 
+               style="background-color: #0096C7; color: white; padding: 8px 12px; border-radius: 4px; text-decoration: none; font-size: 0.85rem; margin-right: 4px;">
+              Update
+            </a>
+            <a href="{% url 'delete_bundling' i.id_bundling %}" 
+               style="background-color: #E63946; color: white; padding: 8px 12px; border-radius: 4px; text-decoration: none; font-size: 0.85rem;">
+              Delete
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+        </div>
+      </div>
+      {% if request.user.is_authenticated %}
+      <div class="text-center mt-4">
+        <a href="{% url 'create_bundling' %}" class="btn btn-primary btn-lg" style="background: linear-gradient(45deg, #023E8A, #0077B6); border: none; padding: 12px 30px;">
+          + Tambah Bundling Baru
+        </a>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+  {% else %}
+  
+<style>
+  .bundling-card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: white;
+    text-decoration: none;
+  }
+  .bundling-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+  }
+  .bundling-img-wrapper {
+    position: relative;
+    padding-top: 56.25%; /* Rasio 16:9 */
+    overflow: hidden;
+    background: #f8f9fa;
+  }
+  .bundling-img-wrapper img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  .bundling-card:hover .bundling-img-wrapper img {
+    transform: scale(1.05);
+  }
+  .bundling-promo-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #E63946;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    box-shadow: 0 2px 8px rgba(230, 57, 70, 0.4);
+  }
+  .bundling-price {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: rgba(2, 62, 138, 0.95);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .bundling-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+  .bundling-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 0.4rem;
+    line-height: 1.3;
+  }
+  .bundling-items {
+    font-size: 0.8rem;
+    color: #023E8A;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .bundling-item-chip {
+    background: #e0f2fe;
+    padding: 2px 8px;
+    border-radius: 12px;
+  }
+  .bundling-desc {
+    font-size: 0.85rem;
+    color: #64748b;
+    line-height: 1.6;
+    margin-bottom: 1.2rem;
+    flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .bundling-btn {
+    background: #f1f5f9;
+    color: #023E8A;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    transition: all 0.2s ease;
+    border: 1px solid #e2e8f0;
+  }
+  .bundling-card:hover .bundling-btn {
+    background: #023E8A;
+    color: white;
+    border-color: #023E8A;
+  }
+</style>
+
+<div class="container mb-5 mt-4">
+  <div class="row g-4">
+    {% for bundling in bundlingobj %}
+    <div class="col-12 col-md-6 col-lg-4">
+      <a href="{% url 'read_detailbundling' bundling.id_bundling %}" class="bundling-card">
+        
+        <div class="bundling-img-wrapper">
+          {% if bundling.thumbnail_bundling %}
+            <img src="{{ bundling.thumbnail_bundling.url }}" alt="{{ bundling.nama_bundling }}">
+          {% else %}
+            <img src="{% static 'images/default.jpg' %}" alt="default">
+          {% endif %}
+          
+          <div class="bundling-promo-badge">Paket Bundling</div>
+          <div class="bundling-price">Rp{{ bundling.harga_bundling|floatformat:0 }}</div>
+        </div>
+
+        <div class="bundling-body">
+          <h5 class="bundling-title">{{ bundling.nama_bundling }}</h5>
+          
+          <div class="bundling-items">
+            {% with detaillist=bundling.detailbundling_set.all %}
+              {% for x in detaillist %}
+                <span class="bundling-item-chip">{{ x.id_produk.nama_produk }}</span>
+              {% endfor %}
+            {% endwith %}
+          </div>
+
+          <div class="bundling-desc">
+            {{ bundling.deskripsi_bundling }}
+          </div>
+          
+          <div class="bundling-btn w-100">
+            Lihat Paket
+          </div>
+        </div>
+        
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+</div>
+
+<script>
+function toggleDescription(bundlingId) {
+  const desc = document.querySelector(`.product-description-${bundlingId}`);
+  const button = desc.nextElementSibling;
+
+  if (desc.style.display === 'none') {
+    desc.style.display = 'block';
+    button.textContent = 'Read Less';
+  } else {
+    desc.style.display = 'none';
+  }
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+main, 
+#content-wrapper, 
+.produk-grid {
+    margin-bottom: 3rem !important; 
+}
+
+@media (max-width: 768px) {
+    main, 
+    #content-wrapper, 
+    .produk-grid  {
+        margin-bottom: 3.5rem !important;
+        margin-top: 2.5rem !important
+    }
+}
+</style>
+{% endblock %}

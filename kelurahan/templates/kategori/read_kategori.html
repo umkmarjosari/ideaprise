@@ -1,0 +1,68 @@
+{% extends "base/base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero" style="background: linear-gradient(to right, #023E8A, #00B4D8); padding: 2rem 0; color: white; margin-bottom: 3rem;">
+  <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+    <h1 style="color: white; margin: 0; font-size: 2.5rem;">Kategori</h1>
+  </div>
+</div>
+
+<div style="background-color: white; padding: 3rem 0;">
+  <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+    <div class="card" style="background: white; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); overflow: hidden;">
+
+      <!-- Wadah scroll -->
+      <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+        <table style="border-collapse: collapse; width: max-content; min-width: 100%;">
+          <thead style="background-color: #023E8A; color: white;">
+            <tr>
+              <th style="padding: 15px; text-align: center;">No</th>
+              <th style="padding: 15px; text-align: center;">ID Kategori</th>
+              <th style="padding: 15px; text-align: center;">Nama Kategori</th>
+              {% if request.user.is_authenticated %}
+              <th style="padding: 15px; text-align: center;">Aksi</th>
+              {% endif %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in kategoriobj %}
+            <tr style="border-bottom: 1px solid #ADE8F4;">
+              <td style="padding: 15px; color: #023E8A; text-align: center; white-space: nowrap;">{{ forloop.counter }}</td>
+              <td style="padding: 15px; color: #023E8A; text-align: center; white-space: nowrap;">{{ i.id_kategori }}</td>
+              <td style="padding: 15px; color: #023E8A; text-align: center; white-space: nowrap;">{{ i.nama_kategori }}</td>
+              {% if request.user.is_authenticated %}
+              <td style="padding: 15px; text-align: center; white-space: nowrap;">
+                <a href="{% url 'update_kategori' i.id_kategori %}" 
+                  style="background-color: #0096C7; color: white; padding: 8px 12px; border-radius: 4px; text-decoration: none; font-size: 0.85rem; margin-right: 4px;">
+                  Update
+                </a>
+                <a href="{% url 'delete_kategori' i.id_kategori %}" 
+                  style="background-color: #E63946; color: white; padding: 8px 12px; border-radius: 4px; text-decoration: none; font-size: 0.85rem;"
+                  onclick="return confirm('Yakin ingin menghapus kegiatan ini beserta semua gambarnya?')">
+                  Delete
+                </a>
+              </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- End scroll -->
+
+    </div>
+    {% if request.user.is_authenticated %}
+    <div class="text-center mt-4">
+      <a href="{% url 'create_kategori' %}" class="btn btn-primary btn-lg" style="background: linear-gradient(45deg, #023E8A, #0077B6); border: none; padding: 12px 30px;">
+        + Tambah Kategori Baru
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

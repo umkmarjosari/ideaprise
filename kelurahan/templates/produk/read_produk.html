@@ -1,0 +1,213 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- Import Poppins Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+
+<!-- Hero Section -->
+<div class="hero" style="background: linear-gradient(to right, #023E8A, #00B4D8); padding: 2rem 0; color: white; margin-bottom: 5rem;">
+  <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+    <h1 style="color: white; margin: 0; font-size: 2.5rem;">Produk</h1>  
+  </div>  
+</div>
+
+<!-- Main Container -->
+{% if request.user.is_authenticated %}
+<div class="bg-white py-5">
+  <div class="container">
+    <div class="card shadow-sm rounded-3 overflow-hidden">
+      <div class="table-responsive">
+        <table class="table table-bordered text-center align-middle" style="min-width: 600px;">
+          <thead class="text-white" style="background-color: #023E8A;">
+            <tr>
+                <th>No</th>
+                <th>ID Produk</th>
+                <th>Nama Produk</th>
+                <th>Gambar</th>
+                <th>Kategori</th>
+                <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in produkobj %}
+              <tr onclick="window.location='{% url 'read_detailproduk' i.id_produk %}'">
+                <td style="color: #023E8A;">{{ forloop.counter }}</td>
+                <td>
+                    <a href="{% url 'read_detailproduk' i.id_produk %}" class="text-decoration-none text-primary small">
+                        {{ i.id_produk }}
+                    </a>
+                </td>
+                <td>
+                    <a href="{% url 'read_detailproduk' i.id_produk %}" class="text-decoration-none text-primary small">
+                        {{ i.nama_produk }}
+                    </a>
+                </td>
+                <td>
+                    {% if i.thumbnail_produk %}
+                      <img src="{{ i.thumbnail_produk.url }}" alt="Thumbnail" class="img-fluid rounded" style="height: 80px; object-fit: cover;">
+                    {% else %}
+                      <span class="text-muted small">Tidak ada gambar</span>
+                    {% endif %}
+                </td>
+                <td class="small">{{ i.id_kategori }}</td>
+                <td>
+                    <a href="{% url 'update_produk' i.id_produk %}" class="btn btn-sm btn-info text-white me-1">
+                      Update
+                    </a>
+                    <a href="{% url 'delete_produk' i.id_produk %}" class="btn btn-sm btn-danger"
+                       onclick="return confirm('Yakin ingin menghapus produk ini beserta semua gambarnya?')">
+                      Delete
+                    </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="text-center mt-4">
+      <a href="{% url 'create_produk' %}" class="btn btn-primary btn-lg" style="background: linear-gradient(45deg, #023E8A, #0077B6); border: none;">
+        + Tambah Produk Baru
+      </a>
+    </div>
+  </div>
+</div>
+
+{% else %}
+<style>
+  .modern-card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: white;
+  }
+  .modern-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+  }
+  .modern-card-img-wrapper {
+    position: relative;
+    padding-top: 75%; /* Rasio 4:3 */
+    overflow: hidden;
+    background: #f8f9fa;
+  }
+  .modern-card-img-wrapper img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  .modern-card:hover .modern-card-img-wrapper img {
+    transform: scale(1.05);
+  }
+  .price-badge {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: rgba(2, 62, 138, 0.95);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .modern-card-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+  .modern-card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+  .modern-card-desc {
+    font-size: 0.85rem;
+    color: #64748b;
+    line-height: 1.6;
+    margin-bottom: 1.2rem;
+    flex-grow: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .btn-modern {
+    background: #f1f5f9;
+    color: #023E8A;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    border: 1px solid #e2e8f0;
+  }
+  .btn-modern:hover {
+    background: #023E8A;
+    color: white;
+    border-color: #023E8A;
+  }
+</style>
+
+<div class="container mb-5">
+  <div class="row g-4">
+    {% for produk in produkobj %}
+      <div class="col-12 col-md-6 col-lg-4">
+        <a href="{% url 'read_detailproduk' produk.id_produk %}" class="text-decoration-none">
+          <div class="modern-card">
+            <div class="modern-card-img-wrapper">
+              {% if produk.thumbnail_produk %}
+                <img src="{{ produk.thumbnail_produk.url }}" alt="{{ produk.nama_produk }}">
+              {% else %}
+                <img src="{% static 'images/default.jpg' %}" alt="default">
+              {% endif %}
+              <div class="price-badge">Rp{{ produk.harga_produk|floatformat:0 }}</div>
+            </div>
+            <div class="modern-card-body">
+              <h5 class="modern-card-title">{{ produk.nama_produk }}</h5>
+              <div class="modern-card-desc">
+                {{ produk.deskripsi_produk }}
+              </div>
+              <div class="btn-modern w-100">
+                Lihat Detail
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<script>
+function toggleDescription(productId) {
+    const desc = document.querySelector(`.product-description-${productId}`);
+    const button = desc.nextElementSibling;
+    if (desc.style.display === 'none') {
+        desc.style.display = 'block';
+        button.textContent = 'Read Less';
+    } else {
+        desc.style.display = 'none';
+    }
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+{% endblock content %}
