@@ -167,6 +167,11 @@ if os.environ.get('USE_SUPABASE_STORAGE', 'False').lower() == 'true':
     
     AWS_S3_REGION_NAME = os.environ.get('SUPABASE_S3_REGION_NAME', 'ap-northeast-1')
     
+    from urllib.parse import urlparse
+    if AWS_S3_ENDPOINT_URL and AWS_STORAGE_BUCKET_NAME:
+        parsed = urlparse(AWS_S3_ENDPOINT_URL)
+        AWS_S3_CUSTOM_DOMAIN = f"{parsed.netloc}/storage/v1/object/public/{AWS_STORAGE_BUCKET_NAME}"
+    
     # Supabase S3 requires path-style addressing and S3v4 signature
     AWS_S3_ADDRESSING_STYLE = 'path'
     AWS_S3_SIGNATURE_VERSION = 's3v4'
